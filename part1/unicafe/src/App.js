@@ -49,5 +49,4 @@ setBad(bad+1)
     </>
   )
 }
-
 export default App
