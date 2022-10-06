@@ -6,7 +6,7 @@ return (<button onClick = {handleClick}>
 </button>)
 }
 
-const StatisticLine = ({text, number}) => (<p>{text}: {number}</p>)
+const StatisticLine = ({text, number}) => (<tr><td>{text}</td><td>{number}</td></tr>)
 
 const Statistics = ({good, neutral, bad, all}) => {
 if (all === 0) { 
@@ -15,12 +15,14 @@ if (all === 0) {
  )}
   return(
 <>
+<table>
  <StatisticLine text = "good" number = {good} />
  <StatisticLine text = "neutral" number = {neutral} />
  <StatisticLine text = "bad" number = {bad} />
  <StatisticLine text = "all" number = {all} />
  <StatisticLine text = "average" number = {(good-bad)/all} />
  <StatisticLine text = "positive" number = {good*100/all} />
+ </table>
 </>)
 }
 
