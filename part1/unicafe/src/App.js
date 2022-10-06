@@ -23,10 +23,11 @@ setGood(good + 1)
 const handleNeutralClick = () => {
 setNeutral(neutral+1)
 }
-
 const handleBadClick = () => {
 setBad(bad+1)
 }
+const all = good + neutral + bad
+
   return (
     <div>
       <h1>Give feedback for Cafeteria</h1>
@@ -37,6 +38,9 @@ setBad(bad+1)
 <Statistics text = "good" number = {good} />
 <Statistics text = "neutral" number = {neutral} />
 <Statistics text = "bad" number = {bad} />
+<Statistics text = "all" number = {all} />
+<Statistics text = "average" number = {(good-bad)/all} />
+<Statistics text = "positive" number = {good*100/all} />
 
     </div>
   )
