@@ -21,8 +21,8 @@ const settoVote = () => {
     newVotesArray[selected] += 1
     setVote(newVotesArray)
 }
-//const copy = [...numberVotes]
-//copy[2] += 1     
+
+let indexMostVoted = votes.indexOf(Math.max(...votes))
 
   return (
     <div>
@@ -31,6 +31,9 @@ const settoVote = () => {
       <br></br>
       <button onClick = {settoVote}>Vote</button>
       <button onClick = {settoSelected}>Next anecdote</button>
+      <h1>Anecdote with most votes</h1>
+      {anecdotes[indexMostVoted]}
+      <p>has {votes[selected]} votes</p>
     </div>
   )
 }
