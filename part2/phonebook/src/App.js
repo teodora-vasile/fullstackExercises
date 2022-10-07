@@ -14,13 +14,18 @@ import { useState } from 'react'
 
     const addName = (event) => {
     event.preventDefault()
-    const nameObject = {
+    
+    if(persons.some(person=>person.name===newName))
+        {alert(`${newName} is already added to phonebook`);
+        setNewName('');
+        return}
+    {const nameObject = {
       name: newName
     }
     setPersons(persons.concat(nameObject))
     setNewName('')
     }
-  
+    }
   return (
     <div>
       <h2>Phonebook</h2>
