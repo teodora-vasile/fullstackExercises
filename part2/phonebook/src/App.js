@@ -2,80 +2,90 @@ import { useState } from 'react'
 
 const Person = ({person}) => <p>{person.name} {person.number}</p>
 
-  const App = () => {
-    const [persons, setPersons] = useState([
-      { name: 'Arto Hellas', number: '040-123456', id: 1 },
-      { name: 'Ada Lovelace', number: '39-44-5323523', id: 2 },
-      { name: 'Dan Abramov', number: '12-43-234345', id: 3 },
-      { name: 'Mary Poppendieck', number: '39-23-6423122', id: 4 }
-    ]) 
-    const [newName, setNewName] = useState('')
-    const [newNumber, setNewNumber] = useState('')
-    const [search, setSearch] = useState('')
-    const [listToShow, setListToShow] = useState([])
-
-    const handleNameChange = (event) => {
-    setNewName(event.target.value)
-    }
-    const handleNumberChange = (event) => {
-    setNewNumber(event.target.value)
-    }
-
-    const handleSearch = (event) => {
-      setSearch(event.target.value)
-      setListToShow (persons.filter((person) =>
-       person.name.toLowerCase().indexOf(event.target.value.toLowerCase()) !== -1))}
-
-    const handleEnter = (event) => {
-       if (event.key === 'Enter') {setSearch('')}
-    }
-
-    const addName = (event) => {
-    event.preventDefault()
-    
-    if(persons.some(person=>person.name===newName))
-        {alert(`${newName} is already added to phonebook`);
-        setNewName('');
-        setNewNumber('');
-        return}
-    {const nameObject = {
-      name: newName,
-      number: newNumber
-    }
-    setPersons(persons.concat(nameObject))
-    setNewName('')
-    setNewNumber('')
-    }
-    }
-  return (
-    <div>
-      <h2>Phonebook</h2>
+const Filter = (props) => {
+  return(
       <div>
-        filter shown with <input onChange = {handleSearch} onKeyDown = {handleEnter} value = {search}></input>
-      </div>
-      <form onSubmit = {addName}>
-        <div>
-          name: <input onChange = {handleNameChange} value = {newName}/>
-        </div>
-        <div>
-          number: <input onChange = {handleNumberChange} value = {newNumber}/>
-          </div>
-        <div>
-          <button type="submit" >add</button>
-        </div>
-      </form>
-      <h2>Numbers</h2>
+        filter shown with <input onChange = {props.onChange} onKeyDown = {props.onKeyDown} value = {props.value}></input>
+      </div>)
+}
+
+const PersonForm = (props) => {
+  return(
+<form onSubmit = {props.addName}>
       <div>
-      {(search !== '') ?
-       (<div> {listToShow.map(person =>
-            <Person person = {person} key = {person.name} />)} </div>)
-       : (<div>{persons.map(person =>
-            <Person person = {person} key = {person.name} />)} </div>)
-  }
+        name: <input onChange = {props.onChange} value = {props.value.name} id="name"/>
       </div>
-    </div>
+      <div>
+        number: <input onChange = {props.onChange} value = {props.value.number} id="number"/>
+        </div>
+      <div>
+        <button type="submit" >add</button>
+      </div>
+    </form>
   )
 }
 
-export default App
+const Persons = (props) => {
+  return(
+    (props.search) !== '' ?
+     (<div> {props.listToShow.map(person =>
+          <Person person = {person} key = {person.name} />)} </div>)
+     :
+    (<div>
+      {props.persons.map(person =>
+        <Person person = {person} key = {person.name} />)} 
+    </div> ) 
+  )
+}
 
+const App = () => {
+  const [persons, setPersons] = useState([
+    { name: 'Arto Hellas', number: '040-123456', id: 1 },
+    { name: 'Ada Lovelace', number: '39-44-5323523', id: 2 },
+    { name: 'Dan Abramov', number: '12-43-234345', id: 3 },
+    { name: 'Mary Poppendieck', number: '39-23-6423122', id: 4 }
+  ]) 
+  const [newPerson, setNewPerson] = useState({name:'', number:''})
+  const [search, setSearch] = useState('')
+  const [listToShow, setListToShow] = useState([])
+
+  const handlePersonChange = (event) => {
+  setNewPerson({...newPerson, [event.target.id]: event.target.value})
+  }
+  
+  const handleSearch = (event) => {
+    setSearch(event.target.value)
+    setListToShow (persons.filter((person) =>
+     person.name.toLowerCase().indexOf(event.target.value.toLowerCase()) !== -1))}
+
+  const handleEnter = (event) => {
+     if (event.key === 'Enter') {setSearch('')}
+  }
+
+  const addName = (event) => {
+  event.preventDefault()
+  if(persons.some(person=>person.name===newPerson.name))
+      {alert(`${newPerson.name} is already added to phonebook`);
+      setNewPerson({name:'', number:''});
+      return}
+  {const nameObject = {
+    name: newPerson.name,
+    number: newPerson.number
+  }
+  setPersons(persons.concat(nameObject))
+  setNewPerson({name:'', number:''});
+  }
+  }
+return (
+  <div>
+    <h2>Phonebook</h2>
+    <Filter onChange = {handleSearch} onKeyDown = {handleEnter} value = {search}/>
+    <PersonForm onChange = {handlePersonChange} value = {{name: newPerson.name,
+    number: newPerson.number}} addName = {addName}/>
+    <h2>Numbers</h2>
+   <Persons persons={persons} search ={search} listToShow={listToShow}/>
+  </div>
+)
+}
+
+export default App
