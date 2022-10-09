@@ -2,7 +2,13 @@ import { useState, useEffect } from 'react'
 import axios from 'axios'
 import css from './App.css'
 
-const Country = ({country}) => {return(<p>{country}</p>)}
+const Country = ({country, handleShow}) => {
+  return(
+    <div>
+  <p>{country} <button onClick={handleShow} value ={country}>Show</button> </p>
+  </div>
+  )
+  }
 
 const FindCountries = (props) => {
   return(
@@ -17,7 +23,6 @@ const CountryData = (props) => {
  const datesToRender = props.countryDates.find((country) =>
  (country.name.common === props.countryChoosed[0]))
  const languages = Object.values(datesToRender.languages)
-
  return(
     <div>
 <h2>{datesToRender.name.common}</h2>
@@ -34,23 +39,28 @@ const RenderCountries = (props) => {
 if (props.countriesList.length > 10)
 {return(<p>Too many matches,specify another filter</p>)}
 else if (props.countriesList.length > 1) {
-  return(<div>{props.countriesList.map(country =>
-    <Country country ={country} key = {country}/>)}</div>
-    ) 
-}
+   return ((props.show) ?
+     (<div><CountryData countryChoosed={props.countriesList} 
+    countryDates = {props.countryDates}/></div>)
+    :
+    (<div>{props.countriesList.map(country =>
+      <Country country ={country} key = {country} 
+      handleShow={props.handleShow}/>)}</div>
+      )
+   )
+    }
+
 else if (props.countriesList.length === 1){
   return <CountryData countryChoosed={props.countriesList} 
-  countryDates = {props.countryDates}
-/>}
-else return
+  countryDates = {props.countryDates}/>}
 }
 
-function App() {
+const App = () => {
 const [search, setSearch] = useState('')
 const [countries, setCountries] = useState([])
 const [countriesList, setCountriesList] = useState ([])
 const [countryDates, setCountryDates] = useState ([])
-
+const [show, setShow] = useState(false)
 
 useEffect(() => {
   axios
@@ -70,11 +80,17 @@ country.toLowerCase().indexOf(event.target.value.toLowerCase()) !== -1)
 setCountriesList(list)
 }}
 
+const handleShow = (event) => {
+  setShow(!show)
+  setCountriesList([event.target.value])
+}
+
   return (
     <>
 <FindCountries onChange={handleSearch} value={search} list ={countriesList}/>
 <RenderCountries countriesList = {countriesList} 
-countries= {countries} search ={search} countryDates={countryDates}/>
+countries= {countries} search ={search} countryDates={countryDates}
+ handleShow={handleShow} show={show}/>
     </>
   )
 }
