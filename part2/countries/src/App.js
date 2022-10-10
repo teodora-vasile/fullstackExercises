@@ -23,15 +23,35 @@ const CountryData = (props) => {
  const datesToRender = props.countryDates.find((country) =>
  (country.name.common === props.countryChoosed[0]))
  const languages = Object.values(datesToRender.languages)
+ const [weather, setWeather] = useState([])
+ const API_KEY= process.env.REACT_APP_API_KEY
+
+ useEffect( () => {
+ axios
+ .get (`https://api.openweathermap.org/data/2.5/weather?q=${datesToRender.capital}&units=metric&appid=${API_KEY}`)
+ .then (response => { const cityWeather = response.data;
+   setWeather(cityWeather)
+ }
+   )
+   },[]
+   )
+   
  return(
-    <div>
+    <>
+      {weather.main ? (
+      <div>
 <h2>{datesToRender.name.common}</h2>
 <p>capital: {datesToRender.capital}</p>
 <p>area: {datesToRender.area}</p>
 <p > <b>languages:</b></p>
 <ul> {languages.map(lang => <li key = {lang}>{lang}</li>)}</ul>
-    <img src={datesToRender.flags.png} width='30%'></img>
-    </div>
+<img src={datesToRender.flags.png}></img>
+<h2>Weather in {datesToRender.capital}</h2>
+ <p>temperature {weather.main.temp}°C</p>
+ <img src = {`http://openweathermap.org/img/wn/${weather.weather[0].icon}@2x.png`}></img>
+ <p>wind {weather.wind.speed} m/s</p>
+ </div>) : null}
+    </>
   )
 }
 
@@ -62,6 +82,7 @@ const [countriesList, setCountriesList] = useState ([])
 const [countryDates, setCountryDates] = useState ([])
 const [show, setShow] = useState(false)
 
+
 useEffect(() => {
   axios
   .get('https://restcountries.com/v3.1/all')
@@ -70,7 +91,7 @@ useEffect(() => {
     setCountries(countriesAllDates.map(countrydates =>
        countrydates.name.common))
     setCountryDates(countriesAllDates)
-  })})
+  })},[])
 
 const handleSearch = (event) => {
 setSearch(event.target.value)
