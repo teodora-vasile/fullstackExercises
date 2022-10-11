@@ -2,7 +2,10 @@ import axios from 'axios'
 import { useEffect, useState } from 'react'
 import personService from './services/persons'
 
-const Person = ({person}) => <p>{person.name} {person.number}</p>
+const Person = ({person, deletePerson}) => 
+<p>{person.name} {person.number} 
+<button onClick={() => deletePerson(person.id, person.name)}>delete</button>
+</p>
 
 const Filter = (props) => {
   return(
@@ -31,11 +34,11 @@ const Persons = (props) => {
   return(
     (props.search) !== '' ?
      (<div> {props.listToShow.map(person =>
-          <Person person = {person} key = {person.name} />)} </div>)
+          <Person person = {person} key = {person.name} deletePerson={props.deletePerson}/>)} </div>)
      :
     (<div>
       {props.persons.map(person =>
-        <Person person = {person} key = {person.name} />)} 
+        <Person person = {person} key = {person.name} deletePerson={props.deletePerson}/>)} 
     </div> ) 
   )
 }
@@ -86,6 +89,16 @@ const App = () => {
   })
   }
   }
+
+const deletePerson = (id, name) => {
+  if(window.confirm(`Delete ${name}?`)){
+    personService
+    .remove(id)
+    .then(() => 
+ setPersons(persons.filter(person => person.id !== id)))
+ }
+}
+
 return (
   <div>
     <h2>Phonebook</h2>
@@ -93,7 +106,7 @@ return (
     <PersonForm onChange = {handlePersonChange} value = {{name: newPerson.name,
     number: newPerson.number}} addName = {addName}/>
     <h2>Numbers</h2>
-   <Persons persons={persons} search ={search} listToShow={listToShow}/>
+   <Persons persons={persons} search ={search} listToShow={listToShow} deletePerson={deletePerson} />
   </div>
 )
 }
