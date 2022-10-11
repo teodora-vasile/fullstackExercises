@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react'
 import personService from './services/persons'
 
 const Person = ({person, deletePerson}) => 
-<p>{person.name} {person.number} 
+<p>{person.name} {person.number} {' '}
 <button onClick={() => deletePerson(person.id, person.name)}>delete</button>
 </p>
 
@@ -73,22 +73,35 @@ const App = () => {
   const addName = (event) => {
   event.preventDefault()
   if(persons.some(person=>person.name===newPerson.name))
-      {alert(`${newPerson.name} is already added to phonebook`);
+      {if(window.confirm(`${newPerson.name} is already added to phonebook, replace the old number with a new one?`))
+          {const nameObject = persons.find(person=>person.name===newPerson.name)
+          nameObject.number = newPerson.number
+        const updatePerson = (id, nameObject) => {
+        personService
+        .update(id, nameObject)
+        .then((changedObject)=>{
+          setPersons(persons.map(person =>
+           person.id !== id ? person : changedObject))
+          console.log(persons)
+          })
+        }
+          }
       setNewPerson({name:'', number:''});
-      return}
-  {const nameObject = {
+      return
+       }
+    {const nameObject = {
     name: newPerson.name,
     number: newPerson.number
-  }
-  
+       }
+    
   personService
   .create(nameObject)
   .then(returnedList=>{
     setPersons(persons.concat(returnedList))
     setNewPerson({name:'', number:''})
-  })
+      })
   }
-  }
+}
 
 const deletePerson = (id, name) => {
   if(window.confirm(`Delete ${name}?`)){
@@ -103,6 +116,7 @@ return (
   <div>
     <h2>Phonebook</h2>
     <Filter onChange = {handleSearch} onKeyDown = {handleEnter} value = {search}/>
+    <h2>Add a new</h2>
     <PersonForm onChange = {handlePersonChange} value = {{name: newPerson.name,
     number: newPerson.number}} addName = {addName}/>
     <h2>Numbers</h2>
