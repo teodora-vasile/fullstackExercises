@@ -44,26 +44,42 @@ const Persons = (props) => {
 }
 
 const Notification = (props) => {
-  if (props.message === null) {return null}
-  {const messageStyle = {
-    color: 'green',
+  
+  const messageStyle = {
     background: 'lightgrey',
     fontSize: 20,
     borderStyle: 'solid',
     borderRadius: 5,
     padding: 10,
     marginBottom: 10}
-    return (<div style = {messageStyle}>
-    {props.message}
-  </div>)}
-}
 
+    if (props.message !== null){
+      messageStyle.color = 'green'
+      return (
+  <div style = {messageStyle}>
+    {props.message}
+  </div>)
+  }
+  
+
+  else if(props.messageError !== null) {
+   messageStyle.color = 'red'
+    return (
+      <div style = {messageStyle}>
+        {props.messageError}
+      </div>)
+  }
+  {return null}
+    }
+  
 const App = () => {
   const [persons, setPersons] = useState([]) 
   const [newPerson, setNewPerson] = useState({name:'', number:''})
   const [search, setSearch] = useState('')
   const [listToShow, setListToShow] = useState([])
   const [message, setMessage] = useState(null)
+  const [messageError, setMessageError] = useState(null)
+  
  
   useEffect(() => {
     personService
@@ -121,14 +137,17 @@ const deletePerson = (id, name) => {
     personService
     .remove(id)
     .then(() => 
- setPersons(persons.filter(person => person.id !== id)))
+    setPersons(persons.filter(person => person.id !== id)))
+    .catch(error => {setMessageError(`Information of ${name} has already been removed from server`)
+    setPersons(persons.filter(person => person.id !== id))}
+    )
  }
 }
 
 return (
   <div>
     <h2>Phonebook</h2>
-    <Notification message = {message}/>
+    <Notification message = {message} messageError = {messageError}/>
     <Filter onChange = {handleSearch} onKeyDown = {handleEnter} value = {search}/>
     <h2>Add a new</h2>
     <PersonForm onChange = {handlePersonChange} value = {{name: newPerson.name,
