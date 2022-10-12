@@ -43,6 +43,21 @@ const Persons = (props) => {
   )
 }
 
+const Notification = (props) => {
+  if (props.message === null) {return null}
+  {const messageStyle = {
+    color: 'green',
+    background: 'lightgrey',
+    fontSize: 20,
+    borderStyle: 'solid',
+    borderRadius: 5,
+    padding: 10,
+    marginBottom: 10}
+    return (<div style = {messageStyle}>
+    {props.message}
+  </div>)}
+}
+
 const App = () => {
   const [persons, setPersons] = useState([]) 
   const [newPerson, setNewPerson] = useState({name:'', number:''})
@@ -80,6 +95,8 @@ const App = () => {
   .then(returnedList=>{
     setPersons(persons.concat(returnedList))
     setNewPerson({name:'', number:''})
+    setMessage(`Added ${newPerson.name}`)
+    setTimeout(() => {setMessage(null)}, 5000)
       })
     }
 
@@ -91,6 +108,8 @@ else {
         .then(changedObject => {
           setPersons(persons.map(person =>
            person.id !== changedObject.id ? person : changedObject))
+          setMessage(`Changed phone number for ${updateObject[0].name}`)
+          setTimeout(() => {setMessage(null)}, 5000)
           })
       }
        {setNewPerson({name:'', number:''})}
@@ -109,6 +128,7 @@ const deletePerson = (id, name) => {
 return (
   <div>
     <h2>Phonebook</h2>
+    <Notification message = {message}/>
     <Filter onChange = {handleSearch} onKeyDown = {handleEnter} value = {search}/>
     <h2>Add a new</h2>
     <PersonForm onChange = {handlePersonChange} value = {{name: newPerson.name,
