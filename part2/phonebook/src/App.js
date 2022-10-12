@@ -48,7 +48,8 @@ const App = () => {
   const [newPerson, setNewPerson] = useState({name:'', number:''})
   const [search, setSearch] = useState('')
   const [listToShow, setListToShow] = useState([])
-
+  const [message, setMessage] = useState(null)
+ 
   useEffect(() => {
     personService
     .getAll()
@@ -72,35 +73,28 @@ const App = () => {
 
   const addName = (event) => {
   event.preventDefault()
-  if(persons.some(person=>person.name===newPerson.name))
-      {if(window.confirm(`${newPerson.name} is already added to phonebook, replace the old number with a new one?`))
-          {const nameObject = persons.find(person=>person.name===newPerson.name)
-          nameObject.number = newPerson.number
-        const updatePerson = (id, nameObject) => {
-        personService
-        .update(id, nameObject)
-        .then((changedObject)=>{
-          setPersons(persons.map(person =>
-           person.id !== id ? person : changedObject))
-          console.log(persons)
-          })
-        }
-          }
-      setNewPerson({name:'', number:''});
-      return
-       }
-    {const nameObject = {
-    name: newPerson.name,
-    number: newPerson.number
-       }
-    
-  personService
-  .create(nameObject)
+  const updateObject = persons.filter(person => person.name===newPerson.name)
+  if(updateObject.length === 0)
+  {personService
+  .create(newPerson)
   .then(returnedList=>{
     setPersons(persons.concat(returnedList))
     setNewPerson({name:'', number:''})
       })
-  }
+    }
+
+else {
+      if(window.confirm(`${newPerson.name} is already added to phonebook, replace the old number with a new one?`))
+      {
+        personService
+        .update(updateObject[0].id, newPerson)
+        .then(changedObject => {
+          setPersons(persons.map(person =>
+           person.id !== changedObject.id ? person : changedObject))
+          })
+      }
+       {setNewPerson({name:'', number:''})}
+        }
 }
 
 const deletePerson = (id, name) => {
