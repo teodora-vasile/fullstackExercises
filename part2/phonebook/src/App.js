@@ -61,7 +61,6 @@ const Notification = (props) => {
   </div>)
   }
   
-
   else if(props.messageError !== null) {
    messageStyle.color = 'red'
     return (
@@ -80,7 +79,6 @@ const App = () => {
   const [message, setMessage] = useState(null)
   const [messageError, setMessageError] = useState(null)
   
- 
   useEffect(() => {
     personService
     .getAll()
@@ -128,7 +126,7 @@ else {
           setTimeout(() => {setMessage(null)}, 5000)
           })
       }
-       {setNewPerson({name:'', number:''})}
+       else {setNewPerson({name:'', number:''})}
         }
 }
 
